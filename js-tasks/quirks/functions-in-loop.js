@@ -23,3 +23,16 @@ console.log([
 
 // console.log(array[0]()); // 10
 // console.log(array[1]()); // 9
+
+var i = 11;
+var array = [];
+
+while (i--) {
+  array.push(function() {
+    return i + i;
+  })
+};
+
+
+console.log(array[0]());
+console.log(array[1]());
