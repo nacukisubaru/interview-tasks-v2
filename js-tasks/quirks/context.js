@@ -40,3 +40,24 @@ execute(logger.check);
 // loggerCheck.call(logger);
 
 // _____________________________
+
+
+// var obj = {
+//   a: 1,
+// }
+
+// (function() {
+//   obj.a = 2;
+// })(obj);
+
+// console.log(obj.a); // 2
+
+
+var foo = "hello";
+
+(function() {
+  var bar = "world";
+  console.log(foo + " " + bar); // hello world
+})();
+
+console.log(foo + bar);

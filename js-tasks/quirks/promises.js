@@ -158,3 +158,129 @@ Promise.reject('a')
   // Promise.resolve().then(() => {
   //   console.log(5)
   // })
+
+
+
+// _____________________________
+
+
+// const run = () => {
+//   setTimeout(() => {
+//     console.log('timeout');
+//   }, 0);
+//   console.log(1);
+
+//   new Promise((resolve) => {
+//     console.log('Promise');
+//     resolve(() => {
+//       console.log('???');
+//       resolve();
+//     });
+//   }).then(() => {
+//     console.log('then1');
+//   })
+//   .then(() => {
+//     console.log('then2');
+//   })
+
+//   console.log('4');
+
+//   setTimeout(() => {
+//     console.log('timeout2');
+//   }, 0);
+// }
+
+
+// run();
+
+// 1 Promise 4 then1 then2  timeout timeout2
+
+
+// https://chatgpt.com/c/69e11cac-7fd4-8333-b295-0882e2cdd824
+
+// setTimeout(() => {
+//   console.log('timeout');
+// }, 0);
+// console.log(1);
+
+// new Promise((resolve) => {
+//   console.log('Promise');
+//   setTimeout(() => {
+//     console.log('777');
+//     resolve();
+//   }, 0);
+// }).then(() => {
+//   setTimeout(() => {
+//      console.log('then1');
+//   }, 0);
+// })
+// .then(() => {
+//   console.log('then2');
+// })
+
+// console.log('4');
+
+// setTimeout(() => {
+//   console.log('titmeOut2');
+// }, 0);
+
+
+// _______________________________________
+
+// console.log('A');
+
+// setTimeout(() => {
+//   console.log('B');
+
+//   Promise.resolve().then(() => {
+//     console.log('C');
+//   });
+
+//   setTimeout(() => {
+//     console.log('D');
+//   }, 0);
+// }, 0);
+
+// Promise.resolve().then(() => {
+//   console.log('E');
+
+//   setTimeout(() => {
+//     console.log('F');
+//   }, 0);
+// });
+
+// console.log('G');
+
+// setTimeout(() => {
+//   console.log('H');
+// }, 0);
+
+// Promise.resolve().then(() => {
+//   console.log('I');
+// });
+
+// A G E I B C H F D
+
+
+console.log('1. start');
+
+setTimeout(() => {
+  console.log('2. Timeout 1');
+  Promise.resolve().then(() => console.log('3. Promise inside Timeout 1'));
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log('4. Promise 1');
+  setTimeout(() => console.log('5. Timeout inside Promise 1'), 0);
+});
+
+queueMicrotask(() => console.log('6. Queue Microtask 1'));
+
+setTimeout(() => {
+  console.log('7. Timeout 2');
+  queueMicrotask(() => console.log('8. Queue Microtask inside Timeout 2'));
+}, 0);
+
+console.log('9. end'); // hello
+
+// 1 9 4 PROMIS 1  6 QUUEUE MICRO 1  2 TIMEOUT 1 3 PROMISE INSIDE TIMEOUT 1  7 TIMEOUT 2 8 QUEUE MICROTASK  ISNIDE TIEMOUT 2   5 TIMEOUT INSTIDE PROMISE 1 
