@@ -95,14 +95,14 @@
 // 8. `.then(x => console.log(x))` выводит 1 из Promise.resolve(1).
 
 
-Promise.resolve(1)
-  .then(x => x + 1)
-  .then(x => { throw x })
-  .then(x => console.log(x))
-  .catch(err => console.log(err))
-  .then(x => Promise.resolve(1))
-  .catch(err => console.log(err))
-  .then(x => console.log(x))
+// Promise.resolve(1)
+//   .then(x => x + 1)
+//   .then(x => { throw x })
+//   .then(x => console.log(x))
+//   .catch(err => console.log(err))
+//   .then(x => Promise.resolve(1))
+//   .catch(err => console.log(err))
+//   .then(x => console.log(x))
 
 
 // __________________________
@@ -129,15 +129,15 @@ Promise.resolve(1)
 // добавляем d3 и finally не работает с аругментами поэтому не добавит
 // дальше вывод
 
-Promise.reject('a')
-  .then(p => p + '1', p => p + '2')
-  .catch(p => p + 'b')
-  .catch(p => p + 'c')
-  .then(p => p + 'd1')
-  .then('d2')
-  .then(p => p + 'd3')
-  .finally(p => p + 'e')
-  .then(p => console.log(p))
+// Promise.reject('a')
+//   .then(p => p + '1', p => p + '2')
+//   .catch(p => p + 'b')
+//   .catch(p => p + 'c')
+//   .then(p => p + 'd1')
+//   .then('d2')
+//   .then(p => p + 'd3')
+//   .finally(p => p + 'e')
+//   .then(p => console.log(p))
 
 // _________________________________
 
@@ -262,25 +262,68 @@ Promise.reject('a')
 // A G E I B C H F D
 
 
-console.log('1. start');
+// console.log('1. start');
 
-setTimeout(() => {
-  console.log('2. Timeout 1');
-  Promise.resolve().then(() => console.log('3. Promise inside Timeout 1'));
-}, 0);
+// setTimeout(() => {
+//   console.log('2. Timeout 1');
+//   Promise.resolve().then(() => console.log('3. Promise inside Timeout 1'));
+// }, 0);
 
-Promise.resolve().then(() => {
-  console.log('4. Promise 1');
-  setTimeout(() => console.log('5. Timeout inside Promise 1'), 0);
-});
+// Promise.resolve().then(() => {
+//   console.log('4. Promise 1');
+//   setTimeout(() => console.log('5. Timeout inside Promise 1'), 0);
+// });
 
-queueMicrotask(() => console.log('6. Queue Microtask 1'));
+// queueMicrotask(() => console.log('6. Queue Microtask 1'));
 
-setTimeout(() => {
-  console.log('7. Timeout 2');
-  queueMicrotask(() => console.log('8. Queue Microtask inside Timeout 2'));
-}, 0);
+// setTimeout(() => {
+//   console.log('7. Timeout 2');
+//   queueMicrotask(() => console.log('8. Queue Microtask inside Timeout 2'));
+// }, 0);
 
-console.log('9. end'); // hello
+// console.log('9. end'); // hello
 
 // 1 9 4 PROMIS 1  6 QUUEUE MICRO 1  2 TIMEOUT 1 3 PROMISE INSIDE TIMEOUT 1  7 TIMEOUT 2 8 QUEUE MICROTASK  ISNIDE TIEMOUT 2   5 TIMEOUT INSTIDE PROMISE 1 
+
+async function f() {
+  console.log(1);
+  const promise = new Promise((resolve) => {
+    console.log(2);
+    setTimeout(() => {
+      console.log(3);
+      resolve('done');
+      console.log(4);
+    });
+  });
+  console.log(5);
+
+  const result = await promise;
+  console.log(6);
+  console.log(result);
+  return 'RESULT';
+}
+
+f();
+console.log(7); // зарегалась в колстек но выполнится после 1,2,5
+// потому что после 5-ки начинается асинхронный код и дожидаемся ответа
+// но промис выполнится, только после setTimeout, поэтому мы переключимся на колстек
+
+// 1 2 5 7 3 4 6 готово
+
+
+// тут в then второй параметр onrejected
+// и там так мы обработали реджект мы уже не попадаем в catch
+// но попадаем в then и там уже обрабатываем результат реджекта
+// внутри finally операции игнорируются и мы просто 
+// возвращаем результат реджекта дальше по цепочке 
+// a2d1d3
+
+// Promise.reject('a')
+//   .then(p => p + '1', p => p + '2')
+//   .catch(p => p + 'b')
+//   .catch(p => p + 'c')
+//   .then(p => p + 'd1')
+//   .then('d2')
+//   .then(p => p + 'd3')
+//   .finally(p => p + 'e')
+//   .then(p => console.log(p))

@@ -61,3 +61,9 @@ var foo = "hello";
 })();
 
 console.log(foo + bar);
+
+// for (var i = []; i.length < 3; i.push(2)) {
+//   setTimeout(() => {
+//     console.log(i);
+//   }, i.length * 1000);
+// }
