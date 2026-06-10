@@ -29,24 +29,100 @@
 
 // https://chatgpt.com/c/69c79fbf-b584-8392-aee0-0827255f9292
 
-type MakeRequired<T, K extends keyof T> = Omit<T, K> & {
-  [P in K]-?: T[P];
-};
+// type MakeRequired<T, K extends keyof T> = Omit<T, K> & {
+//   [P in K]-?: T[P];
+// };
 
-interface User {
-  id: number,
-  name?: string,
-  email?: string,
-  age?: number,
-  address?: {
-    city?: string,
-    street?: string,
-  }
+// interface User {
+//   id: number,
+//   name?: string,
+//   email?: string,
+//   age?: number,
+//   address?: {
+//     city?: string,
+//     street?: string,
+//   }
+// }
+
+// type RequiredNameUser = MakeRequired<User, 'name'>;
+
+// type RequiredContactUser = MakeRequired<User, 'name' | 'email'>;
+
+// const user2: RequiredNameUser = {id: 1, name: 'sdfsd', age:2222};
+// const user3: RequiredContactUser = {id: 1, name: 'sdfsd', email: 'dfs', age:2222};
+
+
+// type DeepMerge<T, U> = {[K in keyof T]: T[K]} & {[K in keyof U]: U[K]};
+
+// function merge2<T, U>(obj1: T, obj2: U): DeepMerge<T, U> {
+//   return {...obj1, ...obj2};
+// }
+
+// const res = merge2({a: 5}, {b: { a: 10, mes: 'test' }});
+// res
+
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  description: string;
+  tags: string[];
+  dimensions: {
+    width: number;
+    height: number;
+    depth: number;
+  };
 }
 
-type RequiredNameUser = MakeRequired<User, 'name'>;
+// type PartialExcept<T, K extends keyof T> = 
+//   { [P in keyof T]+?: T[P] }  // все опциональные
+//   &
+//   { [P in K]: T[P] }          // K — перезаписывают как обязательные
 
-type RequiredContactUser = MakeRequired<User, 'name' | 'email'>;
 
-const user2: RequiredNameUser = {id: 1, name: 'sdfsd', age:2222};
-const user3: RequiredContactUser = {id: 1, name: 'sdfsd', email: 'dfs', age:2222};
+type PartialExcept<T, K extends keyof T> = {[key in K]?: T[key]} & {[key2 in Exclude<keyof T, K>]-?: T[key2]};
+
+
+
+type PartialProduct = PartialExcept<Product, 'id' | 'name' | 'price'>;
+
+
+interface Mixed {
+  id: number;
+  name: string;
+  age: number;
+  isActive: boolean;
+  title: string;
+}
+
+// type PickByValue<T, K extends keyof T> = T[K] extends string ? T[K] : never;
+
+// type PickByValue<T, K> = {[key in keyof T]: T[key] extends K ? T[key] : never}
+
+type PickByValue<T, V> = {[key in keyof T as T[key] extends V ? key : never]: T[key]};
+
+type Result = PickByValue<Mixed, string>;
+
+const res: Result = {name: 'gdfg', title: 'fsdfs'};
+
+// { name: string; title: string }
+// оставить только те ключи у которых тип значения === string
+
+
+interface Form {
+  id: number;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  age: number;
+}
+
+// {[key in keyof T as T[key] extends null  ]};
+
+type NullableKeys<T> = keyof {[key in keyof T as null extends T[key]? key : never]: T[key]};
+
+type Result2 = NullableKeys<Form>;
+
+// 'email' | 'phone'
+// вернуть union только тех ключей у которых в типе есть null
