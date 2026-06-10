@@ -126,3 +126,59 @@ type Result2 = NullableKeys<Form>;
 
 // 'email' | 'phone'
 // вернуть union только тех ключей у которых в типе есть null
+
+
+type KebabCaseHelper<S extends string> = S extends `${infer First}${infer Rest}`
+? First extends '-' ? `${Lowercase<First>}${KebabCaseHelper<Rest>}` : First extends Uppercase<First> 
+? `-${Lowercase<First>}${KebabCaseHelper<Rest>}` 
+: `${Lowercase<First>}${KebabCaseHelper<Rest>}` 
+: S;
+
+
+type KebabCase<S extends string> = S extends `${infer First}${infer Rest}` ? `${Lowercase<First>}${KebabCaseHelper<Rest>}` : S;
+
+type FooBarBaz = KebabCase<"FooBarBaz">
+const foobarbaz: FooBarBaz = "foo-bar-baz"
+
+type DoNothing = KebabCase<"do-nothing">
+const doNothing: DoNothing = "do-nothing"
+
+type Push<Arr extends unknown [], Item> = [...Arr, Item];
+
+type ArrayBuilder<arr extends unknown [], num> = arr['length'] extends num ? arr : ArrayBuilder<Push<arr, 1>, num>;
+
+type Pop<Arr extends unknown[]> = Arr extends [...infer Rest, infer Last] ? Rest : never
+
+// type BuildArray = ArrayBuilder<[], 20>;
+
+type MinusOneHelper<num extends number> = Pop<ArrayBuilder<[], num>>;
+
+type MinusOne<num extends number> = MinusOneHelper<num> extends unknown[] ? MinusOneHelper<num>['length'] : never;
+
+type Zero = MinusOne<1> // 0
+type FiftyFour = MinusOne<55> // 54
+
+//Implement a type IsNever, which takes input type T. If the type of resolves to never, return true, otherwise false.
+
+type IsNever<T> = [T] extends [never] ? 'true' : 'false';
+
+type A = IsNever<never> // expected to be true
+type B = IsNever<undefined> // expected to be false
+type C = IsNever<null> // expected to be false
+type D = IsNever<[]> // expected to be false
+type E = IsNever<number> // expected to be false
+
+//https://github.com/type-challenges/type-challenges/blob/main/questions/05821-medium-maptypes/README.md
+
+type StringToNumber = { mapFrom: string; mapTo: number;}
+type StringToDate = { mapFrom: string; mapTo: Date;}
+
+type MapTypes<T, Settings extends StringToNumber | StringToDate> = {[K in keyof T]: Settings['mapFrom'] extends T[K] ? Settings['mapTo'] : T[K] }
+
+type MappedNumbers = MapTypes<{iWillBeANumberOneDay: string, kek: Date}, StringToNumber> // gives { iWillBeANumberOneDay: number; }
+
+type MappedNumbersAndDates = MapTypes<{iWillBeNumberOrDate: string}, StringToDate | StringToNumber> // gives { iWillBeNumberOrDate: number | Date; }
+
+const mappedStrings: MappedNumbers = { iWillBeANumberOneDay: 5, kek: new Date() };
+
+const mappedNumbersAndDates: MappedNumbersAndDates ={ iWillBeNumberOrDate: new Date() };
